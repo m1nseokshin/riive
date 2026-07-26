@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { kpopDatabase, defaultRecentSearches } from '../../data/kpopData';
+import { getAssetPath } from '../../utils/assetHelper';
 
 export default function ExplorePage() {
   const router = useRouter();
@@ -329,7 +330,7 @@ export default function ExplorePage() {
           <div style={{
             height: '200px',
             borderRadius: '20px',
-            background: 'url("/img_fig/Frame 9.png") center/cover',
+            background: `url("${getAssetPath('/img_fig/Frame 9.png')}") center/cover`,
             boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
           }} />
         </div>
@@ -341,9 +342,9 @@ export default function ExplorePage() {
 
           <div style={{ display: 'flex', gap: '14px', overflowX: 'auto', paddingBottom: '10px' }}>
             {[
-              { id: 1, img: '/img_fig/Rectangle 34625933.png' },
-              { id: 2, img: '/img_fig/Rectangle 34625934.png' },
-              { id: 3, img: '/img_fig/Rectangle 34625935.png' }
+              { id: 1, img: getAssetPath('/img_fig/Rectangle 34625933.png') },
+              { id: 2, img: getAssetPath('/img_fig/Rectangle 34625934.png') },
+              { id: 3, img: getAssetPath('/img_fig/Rectangle 34625935.png') }
             ].map(item => (
               <div 
                 key={item.id} 

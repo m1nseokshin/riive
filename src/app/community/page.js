@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { getAssetPath } from '../../utils/assetHelper';
 
 export default function CommunityPage() {
   const artists = [
-    { id: 'riize', name: 'RIIZE', img: '/img_fig/Rectangle 1954137010.png' },
-    { id: 'cortis', name: 'CORTIS', img: '/img_fig/Rectangle 1954137011.png' },
-    { id: 'ive', name: 'IVE', img: '/img_fig/Rectangle 1954137012.png' },
+    { id: 'riize', name: 'RIIZE', img: getAssetPath('/img_fig/Rectangle 1954137010.png') },
+    { id: 'cortis', name: 'CORTIS', img: getAssetPath('/img_fig/Rectangle 1954137011.png') },
+    { id: 'ive', name: 'IVE', img: getAssetPath('/img_fig/Rectangle 1954137012.png') },
   ];
 
   return (
@@ -84,7 +85,7 @@ export default function CommunityPage() {
           style={{
             height: '240px',
             borderRadius: '20px',
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%), url("/img_fig/Frame 56.png") center/cover',
+            background: `linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%), url("${getAssetPath('/img_fig/Frame 56.png')}") center/cover`,
             padding: '24px',
             display: 'flex',
             flexDirection: 'column',
@@ -119,7 +120,7 @@ export default function CommunityPage() {
           style={{
             height: '180px',
             borderRadius: '20px',
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%), url("/img_fig/Frame 15.png") center/cover',
+            background: `linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%), url("${getAssetPath('/img_fig/Frame 15.png')}") center/cover`,
             padding: '20px',
             display: 'flex',
             alignItems: 'center',

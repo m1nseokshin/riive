@@ -1,18 +1,20 @@
 'use client';
 
+import { getAssetPath } from '../../utils/assetHelper';
+
 export default function LibraryPage() {
   const historyItems = [
     {
       id: 1,
       title: '2024 RIIZE FAN-CON RIIZING DAY in SEOUL',
       progress: '70%',
-      img: '/img_fig/Rectangle 34625924.png'
+      img: getAssetPath('/img_fig/Rectangle 34625922.png')
     },
     {
       id: 2,
       title: '2026 LE SSERAFIM TOUR : PUREFLOW',
       progress: '30%',
-      img: '/img_fig/Rectangle 34625926.png'
+      img: getAssetPath('/img_fig/Rectangle 34625926.png')
     }
   ];
 
@@ -20,22 +22,22 @@ export default function LibraryPage() {
     {
       id: 1,
       title: '2025 실리카겔 단독공연 Syn.THE.Size X',
-      img: '/img_fig/Rectangle 34625922-1.png'
+      img: getAssetPath('/img_fig/Rectangle 34625922-1.png')
     },
     {
       id: 2,
       title: 'NewJeans Fan Meeting Bunnies Camp 2024 Tokyo Dome',
-      img: '/img_fig/Group 2147237884.png'
+      img: getAssetPath('/img_fig/Group 2147237884.png')
     },
     {
       id: 3,
       title: 'MY CLASSMaeTE aespa JAPAN FANMEETING 2026',
-      img: '/img_fig/N7F1bGQkUJ3ijj7Pjsq3rS56RZ9goziRyxiv0MLoMojKygM3N9gACNpOHdtiIEmwFL5OmeeQz1LYpDzis6ZmXGfq-ti_e3GV5vi7Aq1ibUw4lLa-pZAsXl-z3xD_ICn0PWOZSmk1yD0CryPnVPCYQg.webp'
+      img: getAssetPath('/img_fig/N7F1bGQkUJ3ijj7Pjsq3rS56RZ9goziRyxiv0MLoMojKygM3N9gACNpOHdtiIEmwFL5OmeeQz1LYpDzis6ZmXGfq-ti_e3GV5vi7Aq1ibUw4lLa-pZAsXl-z3xD_ICn0PWOZSmk1yD0CryPnVPCYQg.webp')
     },
     {
       id: 4,
       title: '2026 LE SSERAFIM TOUR : PUREFLOW',
-      img: '/img_fig/ab67706c0000d72c3343f0ba7cc6027a34c08682.webp'
+      img: getAssetPath('/img_fig/ab67706c0000d72c3343f0ba7cc6027a34c08682.webp')
     }
   ];
 

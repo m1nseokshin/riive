@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
+import { getAssetPath } from '../../../utils/assetHelper';
 
 export default function CommunityDetailPage() {
   const [activeTab, setActiveTab] = useState('홈');
@@ -16,9 +17,9 @@ export default function CommunityDetailPage() {
   ];
 
   const vrContents = [
-    { id: 1, img: '/img_fig/Frame 56.png', hasStar: true },
-    { id: 2, img: '/img_fig/Rectangle 34625934.png', hasStar: true },
-    { id: 3, img: '/img_fig/Rectangle 34625935.png', hasStar: false }
+    { id: 1, img: getAssetPath('/img_fig/Frame 56.png'), hasStar: true },
+    { id: 2, img: getAssetPath('/img_fig/Rectangle 34625934.png'), hasStar: true },
+    { id: 3, img: getAssetPath('/img_fig/Rectangle 34625935.png'), hasStar: false }
   ];
 
   return (
@@ -28,7 +29,7 @@ export default function CommunityDetailPage() {
         position: 'relative',
         height: '340px',
         width: '100%',
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(245,245,247,0.1) 60%, rgba(245,245,247,1) 100%), url("/img_fig/16082932_1938228_1453.jpg") center 15%/cover',
+        background: `linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(245,245,247,0.1) 60%, rgba(245,245,247,1) 100%), url("${getAssetPath('/img_fig/16082932_1938228_1453.jpg')}") center 15%/cover`,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -68,7 +69,7 @@ export default function CommunityDetailPage() {
         {/* Center RIIZE Logo (image 2.png) */}
         <div style={{ textAlign: 'center', marginBottom: '24px', zIndex: 10 }}>
           <img 
-            src="/img_fig/image 2.png" 
+            src={getAssetPath('/img_fig/image 2.png')} 
             alt="RIIZE" 
             style={{ 
               width: '120px', 

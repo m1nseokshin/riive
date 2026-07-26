@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { getAssetPath } from '../utils/assetHelper';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('forYou');
@@ -12,24 +13,24 @@ export default function Home() {
       title: 'LE SSERAFIM TOUR : PUREFLOW IN SEOUL',
       artist: 'LE SSERAFIM',
       badge: 'HOT TREND',
-      img: '/img_fig/Rectangle 34625926.png',
-      logo: '/img_fig/ab67706c0000d72c3343f0ba7cc6027a34c08682.webp'
+      img: getAssetPath('/img_fig/Rectangle 34625926.png'),
+      logo: getAssetPath('/img_fig/ab67706c0000d72c3343f0ba7cc6027a34c08682.webp')
     },
     {
       id: 2,
       title: 'NewJeans Fan Meeting Bunnies Camp 2024 Tokyo Dome',
       artist: 'NewJeans',
       badge: 'TOP 10',
-      img: '/img_fig/Group 2147237884.png',
-      logo: '/img_fig/N7F1bGQkUJ3ijj7Pjsq3rS56RZ9goziRyxiv0MLoMojKygM3N9gACNpOHdtiIEmwFL5OmeeQz1LYpDzis6ZmXGfq-ti_e3GV5vi7Aq1ibUw4lLa-pZAsXl-z3xD_ICn0PWOZSmk1yD0CryPnVPCYQg.webp'
+      img: getAssetPath('/img_fig/Group 2147237884.png'),
+      logo: getAssetPath('/img_fig/N7F1bGQkUJ3ijj7Pjsq3rS56RZ9goziRyxiv0MLoMojKygM3N9gACNpOHdtiIEmwFL5OmeeQz1LYpDzis6ZmXGfq-ti_e3GV5vi7Aq1ibUw4lLa-pZAsXl-z3xD_ICn0PWOZSmk1yD0CryPnVPCYQg.webp')
     },
     {
       id: 3,
       title: '2025 실리카겔 단독공연 Syn.THE.Size X',
       artist: 'Silica Gel',
       badge: 'LIVE',
-      img: '/img_fig/Rectangle 34625922-1.png',
-      logo: '/img_fig/Rectangle 346259222.png'
+      img: getAssetPath('/img_fig/Rectangle 34625922-1.png'),
+      logo: getAssetPath('/img_fig/Rectangle 346259222.png')
     }
   ];
 
@@ -40,7 +41,7 @@ export default function Home() {
         style={{
           position: 'relative',
           height: '420px',
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%), url("/img_fig/16082932_1938228_1453.jpg") center/cover',
+          background: `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%), url("${getAssetPath('/img_fig/16082932_1938228_1453.jpg')}") center/cover`,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
@@ -52,7 +53,7 @@ export default function Home() {
         {/* RIIZE 피그마 원본 로고 이미지 (image 2.png) */}
         <div style={{ marginBottom: '12px' }}>
           <img 
-            src="/img_fig/image 2.png" 
+            src={getAssetPath('/img_fig/image 2.png')} 
             alt="RIIZE" 
             style={{ width: '110px', height: 'auto', objectFit: 'contain' }}
           />
@@ -169,7 +170,7 @@ export default function Home() {
                   width: '160px', 
                   height: '90px', 
                   borderRadius: '12px', 
-                  background: '#0a0c10 url("/img_fig/Rectangle 34625922.png") center/cover',
+                  background: `#0a0c10 url("${getAssetPath('/img_fig/Rectangle 34625922.png')}") center/cover`,
                   position: 'relative',
                   flexShrink: 0,
                   overflow: 'hidden'
@@ -195,7 +196,7 @@ export default function Home() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <img 
-                      src="/img_fig/Rectangle 34625925.png" 
+                      src={getAssetPath('/img_fig/Rectangle 34625925.png')} 
                       alt="RIIZE Logo" 
                       style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }}
                     />
@@ -215,7 +216,7 @@ export default function Home() {
                 borderRadius: '16px', 
                 overflow: 'hidden', 
                 height: '190px', 
-                background: 'url("/img_fig/Rectangle 34625923.png") center/cover',
+                background: `url("${getAssetPath('/img_fig/Rectangle 34625923.png')}") center/cover`,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
               }}>
               </div>
