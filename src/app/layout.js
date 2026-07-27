@@ -1,6 +1,7 @@
 import './globals.css';
 import Navigation from '../components/Navigation';
 import StatusBar from '../components/StatusBar';
+import OnboardingOverlay from '../components/OnboardingOverlay';
 
 export const metadata = {
   title: 'BEBOP - VR 공연 및 아티스트 커뮤니티',
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body>
         <div className="app-wrapper">
+          <OnboardingOverlay />
           <StatusBar />
           <div className="content-area">
             {children}
