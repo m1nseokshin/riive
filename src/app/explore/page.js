@@ -327,12 +327,33 @@ export default function ExplorePage() {
             BLACKPINK DEADLINE :<br />WORLD TOUR IN GOYANG
           </h2>
 
-          <div style={{
-            height: '200px',
-            borderRadius: '20px',
-            background: `url("${getAssetPath('/img_fig/Frame 9.png')}") center/cover`,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
-          }} />
+          <Link 
+            href="/concert/c6"
+            style={{
+              display: 'block',
+              height: '200px',
+              borderRadius: '20px',
+              background: `url("${getAssetPath('/img_fig/Frame 9.png')}") center/cover`,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{
+              position: 'absolute',
+              bottom: '14px',
+              left: '14px',
+              background: 'rgba(0,0,0,0.7)',
+              color: '#ffffff',
+              fontSize: '11px',
+              fontWeight: '800',
+              padding: '6px 12px',
+              borderRadius: '12px',
+              backdropFilter: 'blur(6px)'
+            }}>
+              상세보기 ➔
+            </div>
+          </Link>
         </div>
 
         {/* 새로운 컨텐츠 - VR 콘텐츠 가로 스크롤 카드들 */}
@@ -342,21 +363,39 @@ export default function ExplorePage() {
 
           <div style={{ display: 'flex', gap: '14px', overflowX: 'auto', paddingBottom: '10px' }}>
             {[
-              { id: 1, img: getAssetPath('/img_fig/Rectangle 34625933.png') },
-              { id: 2, img: getAssetPath('/img_fig/Rectangle 34625934.png') },
-              { id: 3, img: getAssetPath('/img_fig/Rectangle 34625935.png') }
+              { id: 'c7', img: getAssetPath('/img_fig/Rectangle 34625933.png'), title: '에스파 FANMEETING' },
+              { id: 'c9', img: getAssetPath('/img_fig/Rectangle 34625934.png'), title: '아이브 DIVE CONCERT' },
+              { id: 'c1', img: getAssetPath('/img_fig/Rectangle 34625935.png'), title: 'RIIZE TOUR VR' }
             ].map(item => (
-              <div 
+              <Link 
                 key={item.id} 
+                href={`/concert/${item.id}`}
                 style={{ 
                   minWidth: '140px', 
                   width: '140px', 
                   height: '190px', 
                   borderRadius: '16px', 
                   background: `url("${item.img}") center/cover`,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  padding: '10px',
+                  textDecoration: 'none'
                 }}
-              />
+              >
+                <span style={{
+                  background: 'rgba(0,0,0,0.75)',
+                  color: '#ffffff',
+                  fontSize: '10px',
+                  fontWeight: '800',
+                  padding: '3px 8px',
+                  borderRadius: '8px',
+                  backdropFilter: 'blur(4px)'
+                }}>
+                  {item.title}
+                </span>
+              </Link>
             ))}
           </div>
         </div>

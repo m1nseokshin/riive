@@ -10,11 +10,12 @@ import {
   ChevronRight, 
   User
 } from 'lucide-react';
+import { getAssetPath } from '../../utils/assetHelper';
 
 export default function SettingsPage() {
   return (
     <div style={{ padding: '0 20px 24px', background: '#f4f4f4', minHeight: '100%', color: '#111111' }}>
-      <div className="screen-header">
+      <div className="screen-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
         <h1 className="screen-title">설정</h1>
       </div>
 
@@ -44,7 +45,7 @@ export default function SettingsPage() {
           overflow: 'hidden'
         }}>
           <img 
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&auto=format&fit=crop" 
+            src={getAssetPath('/img_fig/Rectangle 34625934.png')} 
             alt="김서연 프로필" 
             style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
           />

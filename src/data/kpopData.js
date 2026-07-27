@@ -78,7 +78,7 @@ export const kpopDatabase = [
     category: 'K-POP',
     avatar: getAssetPath('/img_fig/Rectangle 1954137012.png'),
     concerts: [
-      { id: 'c9', title: '2026 IVE 4TH FAN CONCERT DIVE INTO IVE', img: getAssetPath('/img_fig/Rectangle 34625934.png'), tag: 'FAN CONCERT' }
+      { id: 'c9', title: '2026 IVE 4TH FAN CONCERT DIVE INTO IVE', img: getAssetPath('/img_fig/ive_hero.jpg'), tag: 'FAN CONCERT' }
     ]
   },
   {
@@ -89,7 +89,7 @@ export const kpopDatabase = [
     category: 'K-POP',
     avatar: getAssetPath('/img_fig/Rectangle 1954137011.png'),
     concerts: [
-      { id: 'c10', title: '2026 CORTIS TOUR PUT YOUR PHONE DOWN VR', img: getAssetPath('/img_fig/Frame 56.png'), tag: 'VR EXCLUSIVE' }
+      { id: 'c10', title: '2026 CORTIS TOUR PUT YOUR PHONE DOWN VR', img: getAssetPath('/img_fig/cortis_hero.jpg'), tag: 'VR EXCLUSIVE' }
     ]
   }
 ];

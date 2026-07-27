@@ -1,26 +1,30 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAssetPath } from '../utils/assetHelper';
 
 export default function OnboardingOverlay() {
-  const router = useRouter();
   const [showOverlay, setShowOverlay] = useState(true);
-  const [step, setStep] = useState(0); // 0: Splash, 1: Slide 1, 2: Slide 2, 3: Slide 3, 4: Slide 4
+  const [isExiting, setIsExiting] = useState(false);
+  const [step, setStep] = useState(0); // 0: Splash, 1: Onboarding 1, 2: Onboarding 2, 3: Onboarding 3, 4: Onboarding 4
+  const [slideDirection, setSlideDirection] = useState('next'); // 'next' | 'prev'
 
-  // Splash Screen timer (0.8s) -> auto transition to Slide 1
+  // Touch Swipe Gesture Tracking
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+
+  // Splash Timer (Strict 2.0 Seconds)
   useEffect(() => {
     if (step === 0) {
       const timer = setTimeout(() => {
+        setSlideDirection('next');
         setStep(1);
-      }, 1200);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [step]);
 
-  // Check if onboarding already seen in session
   useEffect(() => {
     const hasSeen = sessionStorage.getItem('bebop_onboarding_seen');
     if (hasSeen) {
@@ -29,12 +33,16 @@ export default function OnboardingOverlay() {
   }, []);
 
   const handleFinish = () => {
+    setIsExiting(true);
     sessionStorage.setItem('bebop_onboarding_seen', 'true');
-    setShowOverlay(false);
+    setTimeout(() => {
+      setShowOverlay(false);
+    }, 400);
   };
 
   const handleNext = () => {
     if (step < 4) {
+      setSlideDirection('next');
       setStep(prev => prev + 1);
     } else {
       handleFinish();
@@ -43,7 +51,31 @@ export default function OnboardingOverlay() {
 
   const handlePrev = () => {
     if (step > 1) {
+      setSlideDirection('prev');
       setStep(prev => prev - 1);
+    }
+  };
+
+  // Handle Mobile Touch Swiping (좌우 스와이프 제스처)
+  const onTouchStart = (e) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && step > 0) {
+      handleNext();
+    } else if (isRightSwipe && step > 1) {
+      handlePrev();
     }
   };
 
@@ -51,6 +83,10 @@ export default function OnboardingOverlay() {
 
   return (
     <div 
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      className={isExiting ? 'onboarding-slide-down' : ''}
       style={{
         position: 'absolute',
         top: 0,
@@ -63,10 +99,10 @@ export default function OnboardingOverlay() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        transition: 'opacity 0.4s ease, transform 0.4s ease'
+        userSelect: 'none'
       }}
     >
-      {/* -------------------- STEP 0: SPLASH SCREEN (노드 285:3816) -------------------- */}
+      {/* -------------------- STEP 0: SPLASH (노드 285:3816) -------------------- */}
       {step === 0 && (
         <div 
           className="page-fade-in"
@@ -81,60 +117,33 @@ export default function OnboardingOverlay() {
             background: '#f4f4f4'
           }}
         >
-          {/* Logo & Headline */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <img 
-                src={getAssetPath('/img_fig/Rectangle 34625925.png')} 
-                alt="Logo Symbol" 
-                style={{ width: '48px', height: '48px', borderRadius: '12px', transform: 'rotate(15deg)' }}
-              />
-              <img 
-                src={getAssetPath('/img_fig/image 2.png')} 
-                alt="BEBOP Logo" 
-                style={{ width: '130px', height: 'auto', filter: 'invert(1)' }}
-              />
-            </div>
-            <p style={{ fontSize: '16px', fontWeight: '600', color: '#616161', letterSpacing: '-0.3px' }}>
+            {/* 완성본 원본 통합 스플래시 로고 에셋 (Group 2147237872.png) */}
+            <img 
+              src={getAssetPath('/img_fig/Group 2147237872.png')} 
+              alt="RIVVE Splash Logo" 
+              style={{ width: '210px', height: 'auto', objectFit: 'contain' }}
+            />
+            
+            <p style={{ fontSize: '16px', fontWeight: '600', color: '#616161', letterSpacing: '-0.3px', marginTop: '2px' }}>
               공연을 이어, 순간을 잇다.
             </p>
           </div>
         </div>
       )}
 
-      {/* -------------------- ONBOARDING SLIDES (STEP 1 ~ 4) -------------------- */}
+      {/* -------------------- STEP 1 ~ 4: ONBOARDING SLIDES -------------------- */}
       {step > 0 && (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
           
           {/* Top Bar (SKIP Button) */}
           <div style={{
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'flex-end',
             alignItems: 'center',
-            padding: '40px 24px 0',
-            zIndex: 20
+            padding: '16px 20px 0',
+            zIndex: 30
           }}>
-            {/* Prev Button */}
-            {step > 1 ? (
-              <button 
-                onClick={handlePrev}
-                style={{
-                  background: 'rgba(0,0,0,0.05)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '36px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: '#333'
-                }}
-              >
-                <ChevronLeft size={20} />
-              </button>
-            ) : <div />}
-
             <button 
               onClick={handleFinish}
               style={{
@@ -143,158 +152,263 @@ export default function OnboardingOverlay() {
                 color: '#bebebe',
                 fontSize: '15px',
                 fontWeight: '600',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                letterSpacing: '0.5px'
               }}
             >
               SKIP
             </button>
           </div>
 
-          {/* Slide Content Area with Smooth Animation */}
-          <div className="page-fade-in" style={{ flex: 1, padding: '20px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
+          {/* 50vh 좌우 중앙 정렬 화살표 이동 버튼 (Step 1~3에서 노출) */}
+          {step < 4 && (
+            <>
+              {step > 1 && (
+                <button 
+                  onClick={handlePrev}
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    border: '1px solid #e0e0e0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#111111',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                    zIndex: 40
+                  }}
+                >
+                  <ChevronLeft size={24} />
+                </button>
+              )}
+
+              <button 
+                onClick={handleNext}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  background: '#d6219c',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#ffffff',
+                  boxShadow: '0 6px 16px rgba(214,33,156,0.4)',
+                  zIndex: 40
+                }}
+              >
+                <ChevronRight size={24} />
+              </button>
+            </>
+          )}
+
+          {/* Slide Content Frame with Directional Smooth Animation */}
+          <div key={step} className={slideDirection === 'next' ? 'slide-next' : 'slide-prev'} style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
             
-            {/* SLIDE 1 (노드 285:3829) */}
+            {/* ---------------- SLIDE 1: 공연 속으로 직접 들어가 보세요 ---------------- */}
             {step === 1 && (
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-                <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#111111', lineHeight: '1.3', marginBottom: '12px' }}>
-                    좋아하는 아티스트를<br />
-                    <span style={{ color: '#d6219c' }}>더 가까이</span> 만나보세요.
-                  </h1>
-                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5' }}>
-                    공연은 물론, 비하인드와 다양한 콘텐츠까지<br />
-                    한곳에서 즐길 수 있어요.
-                  </p>
-                </div>
-
-                {/* Hero Illustration Cards */}
-                <div style={{ position: 'relative', height: '360px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img 
-                    src={getAssetPath('/img_fig/16082932_1938228_1453.jpg')}
-                    alt="Artist Concert" 
-                    style={{
-                      width: '260px',
-                      height: '300px',
-                      borderRadius: '24px',
-                      objectFit: 'cover',
-                      boxShadow: '0 20px 40px rgba(214, 33, 156, 0.25)',
-                      transform: 'rotate(-4deg)'
-                    }}
-                  />
-                  <img 
-                    src={getAssetPath('/img_fig/Rectangle 34625923.png')}
-                    alt="Stage Card" 
-                    style={{
-                      position: 'absolute',
-                      width: '140px',
-                      height: '180px',
-                      borderRadius: '18px',
-                      objectFit: 'cover',
-                      bottom: '20px',
-                      right: '10px',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                      transform: 'rotate(8deg)'
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* SLIDE 2 (노드 285:3820) */}
-            {step === 2 && (
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-                <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#111111', lineHeight: '1.3', marginBottom: '12px' }}>
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
+                <div style={{ padding: '10px 24px 0', zIndex: 10 }}>
+                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#000000', lineHeight: '1.3', marginBottom: '12px' }}>
                     공연 속으로<br />
                     <span style={{ color: '#d6219c' }}>직접</span> 들어가 보세요.
                   </h1>
-                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5' }}>
+                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5', fontWeight: '500' }}>
                     VR로 더욱 생생하게,<br />
                     공연장의 분위기를 그대로 느껴보세요.
                   </p>
                 </div>
 
-                {/* VR Graphics */}
-                <div style={{ position: 'relative', height: '360px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* 컷아웃 인물 & 메탈릭 오브제 배치 */}
+                <div style={{ position: 'relative', flex: 1, width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {/* 사람 뒤 강렬한 레드/핑크 글로우 조명 효과 */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    width: '320px',
+                    height: '320px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(235, 10, 110, 0.45) 0%, rgba(214, 33, 156, 0.25) 50%, rgba(244, 244, 244, 0) 75%)',
+                    filter: 'blur(12px)',
+                    zIndex: 1
+                  }} />
+
                   <img 
-                    src={getAssetPath('/img_fig/Frame 56.png')}
-                    alt="VR Concert" 
+                    src={getAssetPath(`/img_fig/${encodeURIComponent('Woman_walking_forward_extended_hand_202607270327 1.png')}`)}
+                    alt="Onboarding Slide 1 VR" 
                     style={{
-                      width: '280px',
-                      height: '320px',
-                      borderRadius: '24px',
-                      objectFit: 'cover',
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-                      transform: 'scale(1.05)'
+                      width: '100%',
+                      height: '92%',
+                      objectFit: 'contain',
+                      objectPosition: 'center bottom',
+                      position: 'absolute',
+                      bottom: 0,
+                      zIndex: 2
                     }}
                   />
                 </div>
               </div>
             )}
 
-            {/* SLIDE 3 (노드 285:3838) */}
+            {/* ---------------- SLIDE 2: 좋아하는 아티스트를 더 가까이 만나보세요 ---------------- */}
+            {step === 2 && (
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
+                <div style={{ padding: '10px 24px 0', zIndex: 10 }}>
+                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#000000', lineHeight: '1.3', marginBottom: '12px' }}>
+                    좋아하는 아티스트를<br />
+                    <span style={{ color: '#d6219c' }}>더 가까이</span> 만나보세요.
+                  </h1>
+                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5', fontWeight: '500' }}>
+                    공연은 물론, 비하인드와 다양한 콘텐츠까지<br />
+                    한곳에서 즐길 수 있어요.
+                  </p>
+                </div>
+
+                <div style={{ position: 'relative', flex: 1, width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    width: '320px',
+                    height: '320px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(235, 10, 110, 0.45) 0%, rgba(214, 33, 156, 0.25) 50%, rgba(244, 244, 244, 0) 75%)',
+                    filter: 'blur(12px)',
+                    zIndex: 1
+                  }} />
+
+                  <img 
+                    src={getAssetPath(`/img_fig/${encodeURIComponent('Woman_reaching_toward_figures_2K_202607270455 1.png')}`)}
+                    alt="Onboarding Slide 2 Artist" 
+                    style={{
+                      width: '100%',
+                      height: '92%',
+                      objectFit: 'contain',
+                      objectPosition: 'center bottom',
+                      position: 'absolute',
+                      bottom: 0,
+                      zIndex: 2
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ---------------- SLIDE 3: 함께 즐기면 더 특별해져요 ---------------- */}
             {step === 3 && (
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-                <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#111111', lineHeight: '1.3', marginBottom: '12px' }}>
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
+                <div style={{ padding: '10px 24px 0', zIndex: 10 }}>
+                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#000000', lineHeight: '1.3', marginBottom: '12px' }}>
                     <span style={{ color: '#d6219c' }}>함께</span> 즐기면<br />
                     더 특별해져요.
                   </h1>
-                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5' }}>
+                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5', fontWeight: '500' }}>
                     팬들과 소통하고,<br />
                     새로운 소식과 이벤트도 놓치지 마세요.
                   </p>
                 </div>
 
-                {/* Community Fan Cards */}
-                <div style={{ position: 'relative', height: '360px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ position: 'relative', flex: 1, width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    width: '320px',
+                    height: '320px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(235, 10, 110, 0.45) 0%, rgba(214, 33, 156, 0.25) 50%, rgba(244, 244, 244, 0) 75%)',
+                    filter: 'blur(12px)',
+                    zIndex: 1
+                  }} />
+
                   <img 
-                    src={getAssetPath('/img_fig/Frame 9.png')}
-                    alt="Fan Community" 
+                    src={getAssetPath('/img_fig/image 1208091747.png')}
+                    alt="Onboarding Slide 3 Fan" 
                     style={{
-                      width: '270px',
-                      height: '290px',
-                      borderRadius: '24px',
-                      objectFit: 'cover',
-                      boxShadow: '0 20px 40px rgba(214, 33, 156, 0.2)'
+                      width: '100%',
+                      height: '92%',
+                      objectFit: 'contain',
+                      objectPosition: 'center bottom',
+                      position: 'absolute',
+                      bottom: 0,
+                      zIndex: 2
                     }}
                   />
                 </div>
               </div>
             )}
 
-            {/* SLIDE 4 (노드 285:3849) */}
+            {/* ---------------- SLIDE 4: 공연의 모든 순간을 이어보세요 ---------------- */}
             {step === 4 && (
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-                <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#111111', lineHeight: '1.3', marginBottom: '12px' }}>
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '10px 24px 24px', position: 'relative' }}>
+                <div style={{ zIndex: 10 }}>
+                  <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#000000', lineHeight: '1.3', marginBottom: '12px' }}>
                     공연의 모든 <span style={{ color: '#d6219c' }}>순간</span>을<br />
                     이어보세요.
                   </h1>
-                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5' }}>
+                  <p style={{ fontSize: '15px', color: '#505050', lineHeight: '1.5', fontWeight: '500' }}>
                     언제 어디서나,<br />
-                    BEBOP과 함께 새로운 공연을 시작해 보세요.
+                    RIVVE와 함께 새로운 공연을 시작해 보세요.
                   </p>
                 </div>
 
-                {/* Final CTA Buttons */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    width: '340px',
+                    height: '350px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(235, 10, 110, 0.45) 0%, rgba(214, 33, 156, 0.25) 50%, rgba(244, 244, 244, 0) 75%)',
+                    filter: 'blur(12px)',
+                    zIndex: 1
+                  }} />
+
+                  <img 
+                    src={getAssetPath('/img_fig/image 1208091748.png')}
+                    alt="Onboarding Slide 4 RIVVE" 
+                    style={{
+                      width: '100%',
+                      height: '90%',
+                      objectFit: 'contain',
+                      objectPosition: 'center bottom',
+                      position: 'absolute',
+                      bottom: 0,
+                      zIndex: 2
+                    }}
+                  />
+                </div>
+
+                {/* 하단 시작하기 & Apple 로그인 CTA 버튼 복원 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '10px', zIndex: 20 }}>
                   <button 
                     onClick={handleFinish}
                     style={{
                       width: '100%',
-                      height: '52px',
+                      height: '54px',
                       background: '#ffffff',
-                      border: '1px solid #111111',
+                      border: '1.5px solid #000000',
                       borderRadius: '14px',
-                      fontSize: '16px',
+                      fontSize: '17px',
                       fontWeight: '700',
-                      color: '#111111',
+                      color: '#000000',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 14px rgba(0,0,0,0.06)'
                     }}
                   >
                      Sign in with Apple
@@ -304,15 +418,15 @@ export default function OnboardingOverlay() {
                     onClick={handleFinish}
                     style={{
                       width: '100%',
-                      height: '52px',
-                      background: '#111111',
+                      height: '54px',
+                      background: '#000000',
                       border: 'none',
                       borderRadius: '14px',
-                      fontSize: '16px',
+                      fontSize: '17px',
                       fontWeight: '700',
                       color: '#ffffff',
                       cursor: 'pointer',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                      boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
                     }}
                   >
                     시작하기
@@ -323,72 +437,29 @@ export default function OnboardingOverlay() {
 
           </div>
 
-          {/* Bottom Bar: Indicators & Left/Right Navigation Buttons */}
+          {/* ---------------- BOTTOM PAGINATION CENTERED DOTS (스와이프 동그라미 중앙 정렬) ---------------- */}
           {step < 4 && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0 24px 36px',
-              zIndex: 20
+              justifyContent: 'center',
+              padding: '0 0 24px',
+              zIndex: 30
             }}>
-              {/* Pagination Dots */}
-              <div style={{ display: 'flex', gap: '6px' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 {[1, 2, 3, 4].map((i) => (
                   <div 
                     key={i} 
                     style={{
-                      width: step === i ? '24px' : '8px',
-                      height: '8px',
-                      borderRadius: '4px',
-                      background: step === i ? '#d6219c' : '#e0e0e0',
-                      transition: 'all 0.3s ease'
+                      width: '9px',
+                      height: '9px',
+                      borderRadius: '50%',
+                      background: step === i ? '#d6219c' : '#ffffff',
+                      border: step === i ? 'none' : '1px solid #cccccc',
+                      transition: 'all 0.25s ease'
                     }}
                   />
                 ))}
-              </div>
-
-              {/* Navigation Arrow Controls */}
-              <div style={{ display: 'flex', gap: '10px' }}>
-                {step > 1 && (
-                  <button 
-                    onClick={handlePrev}
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '50%',
-                      background: '#ffffff',
-                      border: '1px solid #e0e0e0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      color: '#111111',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-                    }}
-                  >
-                    <ChevronLeft size={22} />
-                  </button>
-                )}
-
-                <button 
-                  onClick={handleNext}
-                  style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    background: '#d6219c',
-                    border: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 12px rgba(214,33,156,0.3)'
-                  }}
-                >
-                  <ChevronRight size={22} />
-                </button>
               </div>
             </div>
           )}

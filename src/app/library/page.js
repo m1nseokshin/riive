@@ -43,7 +43,7 @@ export default function LibraryPage() {
 
   return (
     <div style={{ padding: '0 20px 24px', background: '#f5f5f7', minHeight: '100%', color: '#111111' }}>
-      <div className="screen-header">
+      <div className="screen-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
         <h1 className="screen-title">라이브러리</h1>
       </div>
 
